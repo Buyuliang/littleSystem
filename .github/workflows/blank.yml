@@ -1,0 +1,62 @@
+name: Build
+run-name: Building Linux system
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get more disk space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 2048
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout LFS
+        shell: bash
+        run: git lfs fetch && git lfs checkout
+
+      - name: Free up disk space
+        shell: bash
+        run: |
+          sudo rm -rf /usr/share/dotnet && \
+          sudo rm -rf /opt/ghc && \
+          sudo rm -rf "/usr/local/share/boost" && \
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" 
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential gcc-aarch64-linux-gnu bison \
+          qemu-user-static qemu-system-arm qemu-efi u-boot-tools binfmt-support \
+          debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
+          udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
+          python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
+          python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev
+
+      - name: Build image
+        shell: bash
+        run: sudo ./build.sh
+
+      - name: Upload image
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware.bin
+          path: ./build/firmware.bin
+          if-no-files-found: error
+    
+      - name: Clean cache
+        shell: bash
+        run: sync
