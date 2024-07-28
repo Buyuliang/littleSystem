@@ -1,0 +1,11 @@
+#! /bin/sh
+
+cmdline=$(cat /proc/cmdline)
+root_param=$(echo "$cmdline" | sed -n 's/.*root=\([^ ]*\).*/\1/p')
+root_device=$(echo "$root_param" | sed 's/p[0-9]*$//')
+echo -e "d\n2\nn\np\n2\n262144\n\nw\n" | fdisk "$root_device"
+partprobe
+resize2fs "$root_param"
+
+rc-update del first-boot sysinit
+rm /etc/init.d/first-boot /usr/bin/first-boot

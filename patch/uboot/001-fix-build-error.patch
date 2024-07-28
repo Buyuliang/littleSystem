@@ -1,0 +1,41 @@
+diff --git a/arch/arm/mach-rockchip/fit_args.sh b/arch/arm/mach-rockchip/fit_args.sh
+index d92cbf5..bab13d5 100755
+--- a/arch/arm/mach-rockchip/fit_args.sh
++++ b/arch/arm/mach-rockchip/fit_args.sh
+@@ -5,7 +5,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+ #
+ 
+-srctree=$PWD
++if [ -z "$srctree" ]; then
++    srctree="$PWD"
++fi
+ 
+ function help()
+ {
+diff --git a/arch/arm/mach-rockchip/fit_nodes.sh b/arch/arm/mach-rockchip/fit_nodes.sh
+index 9639a06..dcf7509 100755
+--- a/arch/arm/mach-rockchip/fit_nodes.sh
++++ b/arch/arm/mach-rockchip/fit_nodes.sh
+@@ -6,7 +6,7 @@
+ #
+ 
+ # Process args and auto set variables
+-source ./${srctree}/arch/arm/mach-rockchip/fit_args.sh
++source ${srctree}/arch/arm/mach-rockchip/fit_args.sh
+ rm -f ${srctree}/*.digest ${srctree}/*.bin.gz ${srctree}/bl31_0x*.bin
+ 
+ # Periph register
+diff --git a/arch/arm/mach-rockchip/make_fit_atf.sh b/arch/arm/mach-rockchip/make_fit_atf.sh
+index 32ef33b..2211562 100755
+--- a/arch/arm/mach-rockchip/make_fit_atf.sh
++++ b/arch/arm/mach-rockchip/make_fit_atf.sh
+@@ -5,7 +5,7 @@
+ # SPDX-License-Identifier:     GPL-2.0+
+ #
+ 
+-source ./${srctree}/arch/arm/mach-rockchip/fit_nodes.sh
++source ${srctree}/arch/arm/mach-rockchip/fit_nodes.sh
+ 
+ gen_header
+ gen_uboot_node

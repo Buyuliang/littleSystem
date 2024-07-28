@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+
+description="First boot script"
+
+command="/usr/bin/first-boot"
+command_background=true
+pidfile="/run/first-boot.pid"
+
+depend() {
+    after localmount
+    after modules
+}
+
+start() {
+    ebegin "Running first boot script"
+    start-stop-daemon --start --background --exec "$command"
+    eend $?
+}

@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -euo pipefail
+
 ### make ramdisk
 ### busybox 生成 _install 文件夹
 # 1、修改 添加一些目录
