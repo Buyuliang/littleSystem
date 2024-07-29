@@ -89,7 +89,7 @@ sudo umount ${MOUNT_POINT}/_rootfs
 # shrink image
 ROOT_PART_START=$(parted -ms "$OUTPUT_IMG" unit B print | tail -n 1 | cut -d ':' -f 2 | tr -d 'B')
 ROOT_BLOCK_SIZE=$(tune2fs -l "$ROOT_DEV" | grep '^Block size:' | tr -d ' ' | cut -d ':' -f 2)
-ROOT_MIN_SIZE=$(resize2fs -P /dev/loop5p2 2>/dev/null | grep -oP '\d+')
+ROOT_MIN_SIZE=$(resize2fs -P "$ROOT_DEV" 2>/dev/null | grep -oP '\d+')
 
 # shrink fs
 e2fsck -f -p "$ROOT_DEV"
