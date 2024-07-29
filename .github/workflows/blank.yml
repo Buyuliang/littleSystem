@@ -53,8 +53,8 @@ jobs:
       - name: Upload image
         uses: actions/upload-artifact@v3
         with:
-          name: firmware.bin
-          path: ./build/firmware.bin
+          name: firmware.img
+          path: ./build/firmware.img
           if-no-files-found: error
     
       - name: Clean cache
