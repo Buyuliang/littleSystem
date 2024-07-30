@@ -78,9 +78,11 @@ cat ${MOUNT_POINT}/_boot/extlinux/extlinux.conf
 # fill rootfs partitions
 sudo cp $TOP_DIR/build/alpine/* ${MOUNT_POINT}/_rootfs -a
 
-sed -i '/\/dev\/mmcblk/d' $ROOTFS_DIR/etc/fstab
-echo "${START_DEV}p1	/boot	    vfat		defaults  1 0" >> $ROOTFS_DIR/etc/fstab
-echo "${START_DEV}p2	/       ext4		defaults  1 0" >> $ROOTFS_DIR/etc/fstab
+if [ ! -z "$MOUNT_POINT" ]; then
+        sed -i '/\/dev\/mmcblk/d' ${MOUNT_POINT}/_rootfs/etc/fstab
+        echo "${START_DEV}p1	/boot	    vfat		defaults  1 0" >> ${MOUNT_POINT}/_rootfs/etc/fstab
+        echo "${START_DEV}p2	/       ext4		defaults  1 0" >> ${MOUNT_POINT}/_rootfs/etc/fstab
+fi
 
 # umount _boot and _rootfs
 sudo umount ${MOUNT_POINT}/_boot

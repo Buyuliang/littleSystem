@@ -9,7 +9,8 @@ KERNEL_PATCH_DIR="$TOP_DIR/patch/kernel"
 mkdir -p $MODULE_DIR
 
 if [ ! -d "$KERNEL_DIR" ]; then
-    git clone --depth=1 https://github.com/armbian/linux-rockchip.git -b rk-6.1-rkr3 $KERNEL_DIR
+    git clone --depth=1 https://github.com/Joshua-Riek/linux-rockchip.git -b noble $KERNEL_DIR
+    # git clone --depth=1 https://github.com/armbian/linux-rockchip.git -b rk-6.1-rkr3 $KERNEL_DIR
 fi
 
 pushd $KERNEL_DIR
