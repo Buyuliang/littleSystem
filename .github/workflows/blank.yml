@@ -48,7 +48,7 @@ jobs:
 
       - name: Build image
         shell: bash
-        run: sudo ./build.sh
+        run: sudo ./build.sh all
 
       - name: Upload image
         uses: actions/upload-artifact@v3
