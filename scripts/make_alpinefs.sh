@@ -8,8 +8,9 @@ MODULE_DIR="$TOP_DIR/build/_module"
 PACKAGES_DIR="$TOP_DIR/packages/alpine"
 
 if [ ! -f "$ROOTFS_PAK" ]; then
-    wget -O $ROOTFS_PAK https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/aarch64/alpine-minirootfs-3.20.2-aarch64.tar.gz
-    tar -xvf $ROOTFS_PAK -C $ROOTFS_DIR -p
+    wget -O $ROOTFS_PAK https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/aarch64/alpine-minirootfs-3.20.2-aarch64.tar.gz 
+    mkdir -p $ROOTFS_DIR
+    tar -xvf $ROOTFS_PAK -C $ROOTFS_DIR
 fi
 
 sudo mkdir -p "$ROOTFS_DIR/etc"
