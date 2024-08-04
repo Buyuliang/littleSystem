@@ -21,7 +21,9 @@ sudo mkdir -p "$ROOTFS_DIR/etc"
 echo "nameserver 8.8.8.8 " | sudo tee $ROOTFS_DIR/etc/resolv.conf > /dev/null
 
 sudo chroot $ROOTFS_DIR /bin/sh -c "apk update && \
-	apk add alpine-base openssh-server mkinitfs parted e2fsprogs-extra chrony acpid-openrc dhcpcd dhclient lsblk pciutils networkmanager-cli bluez && \
+	apk add alpine-base openssh-server mkinitfs parted e2fsprogs-extra chrony \
+	   river river-doc adwaita-icon-theme foot font-dejavu \
+	   acpid-openrc dhcpcd dhclient lsblk pciutils wpa_supplicant networkmanager networkmanager-cli bluez iw iwd && \
 	rc-update add sshd default && \
 	rc-update add networking default && \
 	rc-update add sysctl boot && \

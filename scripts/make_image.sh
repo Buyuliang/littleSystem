@@ -18,8 +18,9 @@ BOOT_IMG="boot.img"
 ROOTFS_IMG="rootfs.img"
 BASE_SIZE="16M"
 BOOT_SIZE="100M"
-ROOTFS_SIZE="500M"
+ROOTFS_SIZE="2000M"
 START_DEV="/dev/mmcblk0"
+MODULE_DIR="$TOP_DIR/build/_module"
 
 # del last image and other file
 sudo umount ${MOUNT_POINT}/_boot || true
@@ -69,6 +70,7 @@ sudo bash -c 'cat > '"${MOUNT_POINT}/_boot/extlinux/extlinux.conf"'' << EOF
 label rockchip-kernel6.1
         kernel /Image
         fdt /rk3588-blade3-v101-linux.dtb
+        initrd /ramdisk.img
         append console=ttyFIQ,1500000 root=${START_DEV}p2 rw rootfstype=ext4 rootwait
         # append console=ttyFIQ,1500000 root=${START_DEV}p2 rw init=/linuxrc rootfstype=ext4 rootwait
 EOF
@@ -87,6 +89,7 @@ fi
 # umount _boot and _rootfs
 sudo umount ${MOUNT_POINT}/_boot
 sudo umount ${MOUNT_POINT}/_rootfs
+sudo rm -rf ${MOUNT_POINT}
 
 # shrink image
 ROOT_PART_START=$(parted -ms "$OUTPUT_IMG" unit B print | tail -n 1 | cut -d ':' -f 2 | tr -d 'B')
@@ -102,7 +105,7 @@ PART_END=$((ROOT_PART_START + (ROOT_MIN_SIZE * ROOT_BLOCK_SIZE)))
 parted ---pretend-input-tty "$OUTPUT_IMG" <<EOF
 unit B
 resizepart 2 $PART_END
-yes
+Yes
 quit
 EOF
 

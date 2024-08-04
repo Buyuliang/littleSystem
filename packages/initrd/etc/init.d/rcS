@@ -1,0 +1,10 @@
+#!/bin/sh
+
+/bin/mount -a
+mdev -s
+
+echo "Mount real rootfs to /mnt/sysroot..."
+exec mount -t ext4 /dev/mmcblk0p2 /mnt
+
+echo "Switch to read rootfs..."
+exec switch_root -c /dev/ttyFIQ0  /mnt/ /sbin/init

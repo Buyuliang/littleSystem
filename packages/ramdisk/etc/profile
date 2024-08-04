@@ -1,0 +1,8 @@
+#!/bin/sh
+export HOSTNAME=tom
+export USER=root
+export HOME=root
+export PS1="[\${USER}@\${HOSTNAME} \\W]\\# "
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+LD_LIBARAY_PATH=/lib:usr/lib:\$LD_LIBARAY_PATH
+export PATH LD_LIBARAY_PATH

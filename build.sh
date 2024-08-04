@@ -29,6 +29,13 @@ function build_alpine() {
     popd
 }
 
+function build_ramdisk() {
+    echo "Building Ramdisk..."
+    pushd $BUILD_DIR
+    bash $TOP_DIR/scripts/make_ramdisk.sh
+    popd
+}
+
 function build_image() {
     echo "Building Image..."
     pushd $BUILD_DIR
@@ -38,9 +45,9 @@ function build_image() {
 
 function build_all() {
     echo "Building All..."
-    build_uboot
-    build_kernel
-    build_alpine
+    # build_uboot
+    # build_kernel
+    # build_alpine
     build_image
 }
 
@@ -53,6 +60,9 @@ case "$1" in
     kernel)
         build_kernel
         ;;
+    ramdisk)
+        build_ramdisk
+        ;;
     alpine)
         build_alpine
         ;;
@@ -64,7 +74,7 @@ case "$1" in
         ;;
     *)
         echo "Invalid argument: $ARG"
-        echo "Usage: $0 {uboot|kernel|alpine|image|all}"
+        echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|all}"
         exit 1
         ;;
 esac
