@@ -70,7 +70,7 @@ sudo bash -c 'cat > '"${MOUNT_POINT}/_boot/extlinux/extlinux.conf"'' << EOF
 label rockchip-kernel6.1
         kernel /Image
         fdt /rk3588-blade3-v101-linux.dtb
-        initrd /ramdisk.img
+        # initrd /ramdisk.img
         append console=ttyFIQ,1500000 root=${START_DEV}p2 rw rootfstype=ext4 rootwait
         # append console=ttyFIQ,1500000 root=${START_DEV}p2 rw init=/linuxrc rootfstype=ext4 rootwait
 EOF
@@ -79,6 +79,13 @@ cat ${MOUNT_POINT}/_boot/extlinux/extlinux.conf
 
 # fill rootfs partitions
 sudo cp $TOP_DIR/build/alpine/* ${MOUNT_POINT}/_rootfs -a
+sudo mkdir -p /mnt/buildroot
+sudo mount /home/tom/project/ubuntu/ubuntu-lite-rootfs.img /mnt/buildroot
+sudo mkdir -p /mnt/buildroot/vendor
+sudo cp /home/tom/project/littleSystem/packages/alpine/vendor/* /mnt/buildroot/vendor -a
+# sudo mount /home/tom/project/rootfs.ext2 /mnt/buildroot
+sudo rsync -a --delete /mnt/buildroot/* ${MOUNT_POINT}/_rootfs
+sudo umount /mnt/buildroot
 
 if [ ! -z "$MOUNT_POINT" ]; then
         sed -i '/\/dev\/mmcblk/d' ${MOUNT_POINT}/_rootfs/etc/fstab

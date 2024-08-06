@@ -6,7 +6,7 @@ RKBIN_DIR="$TOP_DIR/build/rkbin"
 UBOOT_DIR="$TOP_DIR/build/uboot"
 UBOOT_BUILD_DIR="$UBOOT_DIR/build"
 UBOOT_PATCH_DIR="$TOP_DIR/patch/uboot"
-if [ ! -d "$UBOOT_DIR" ]; then
+if [ ! -d "$RKBIN_DIR" ]; then
     git clone --depth=1 https://github.com/rockchip-linux/rkbin.git -b master $RKBIN_DIR
 fi
 
