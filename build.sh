@@ -11,35 +11,35 @@ mkdir -p $BUILD_DIR > /dev/null 2>&1
 function build_uboot() {
     echo "Building U-Boot..."
     pushd $BUILD_DIR
-    bash $TOP_DIR/scripts/make_uboot.sh
+    bash $TOP_DIR/scripts/build_uboot.sh
     popd
 }
 
 function build_kernel() {
     echo "Building Kernel..."
     pushd $BUILD_DIR
-    bash $TOP_DIR/scripts/make_kernel.sh
+    bash $TOP_DIR/scripts/build_kernel.sh
     popd
 }
 
 function build_alpine() {
     echo "Building Alpine Linux..."
     pushd $BUILD_DIR
-    bash $TOP_DIR/scripts/make_alpinefs.sh
+    bash $TOP_DIR/scripts/build_alpinefs.sh
     popd
 }
 
 function build_ramdisk() {
     echo "Building Ramdisk..."
     pushd $BUILD_DIR
-    bash $TOP_DIR/scripts/make_ramdisk.sh
+    bash $TOP_DIR/scripts/build_ramdisk.sh
     popd
 }
 
 function build_image() {
     echo "Building Image..."
     pushd $BUILD_DIR
-    bash $TOP_DIR/scripts/make_image.sh
+    bash $TOP_DIR/scripts/build_image.sh
     popd
 }
 
