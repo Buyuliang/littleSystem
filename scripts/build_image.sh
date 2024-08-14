@@ -1,128 +1,100 @@
-#! /bin/bash
+#!/bin/bash
 
 set -xeo pipefail
 
 source $TOP_DIR/scripts/tools.sh
 
-### make firmware
-# --------------------------------------------------------------------
-# | 0x40 idbloader | 0x4000 uboot.itb | 0x8000 fat | 0x40000 ramdisk |
-# |                |                  | 32768      |  262144         |
-# --------------------------------------------------------------------
-
+# 输出镜像和挂载点
 OUTPUT_IMG=firmware.img
 MOUNT_POINT=tmp
 
-# File system and size
+# 文件系统
 BOOT_IMG="boot.img"
 ROOTFS_IMG="rootfs.img"
-BASE_SIZE="16M"
-BOOT_SIZE="100M"
-ROOTFS_SIZE="2000M"
 START_DEV="/dev/mmcblk0"
 MODULE_DIR="$TOP_DIR/build/_module"
+BLOCK_SIZE=512
+PAD_SIZE=$((40 * 1024 * 2 * BLOCK_SIZE))
 
-# del last image and other file
+# 删除旧的镜像和挂载点
 sudo umount ${MOUNT_POINT}/_boot || true
 sudo umount ${MOUNT_POINT}/_rootfs || true
 rm -rf $OUTPUT_IMG $BOOT_IMG $ROOTFS_IMG $MOUNT_POINT
+mkdir -p ${MOUNT_POINT}/{_boot,_rootfs} 
 
-truncate -s $(($(convert_size $BASE_SIZE) / 1024 / 1024 + \
-        $(convert_size $BOOT_SIZE) / 1024 / 1024 + \
-        $(convert_size $ROOTFS_SIZE) / 1024 / 1024))M \
-         "$OUTPUT_IMG"
-# dd if=/dev/zero of="$OUTPUT_IMG" bs=1M count=$(($(convert_size $BASE_SIZE) / 1024 / 1024 + \
-#         $(convert_size $BOOT_SIZE) / 1024 / 1024 + \
-#         $(convert_size $ROOTFS_SIZE) / 1024 / 1024))
+# 创建并格式化 boot 文件系统
+mkdir -p boot_fs
+# 填充 boot 文件系统
+# sudo cp $TOP_DIR/build/az04/boot/Image \
+#     $TOP_DIR/build/az04/boot/rockchip/rk3588-az04-acvg.dtb \
+#     boot_fs
+sudo cp $TOP_DIR/build/kernel/build/arch/arm64/boot/Image \
+    $TOP_DIR/build/kernel/build/arch/arm64/boot/dts/rockchip/rk3588-az04.dtb \
+    boot_fs
 
-# Print partition table
-parted --script "$OUTPUT_IMG" \
-mklabel msdos \
+sudo mkdir -p boot_fs/extlinux
+sudo bash -c 'cat > boot_fs/extlinux/extlinux.conf' << EOF 
+label rockchip-kernel6.1
+        kernel /Image
+        fdt /rk3588-az04.dtb
+        append console=ttyFIQ,1500000 root=${START_DEV}p2 rw rootfstype=ext4 rootwait
+EOF
+
+# 创建 boot 镜像
+BOOT_IMG_SIZE=$(( $(du -sb boot_fs | cut -f1) + PAD_SIZE))
+# 判断 BOOT_IMG_SIZE 是否小于 100M
+MAX_BOOT_SIZE=$((100 * 1024 * 1024)) # 100M
+if [ "$BOOT_IMG_SIZE" -ge "$MAX_BOOT_SIZE" ]; then
+    echo "Error: BOOT_IMG_SIZE exceeds 100M limit."
+    exit 1
+fi
+
+truncate -s $BOOT_IMG_SIZE $BOOT_IMG
+mkfs.vfat -F 32 -n BOOT $BOOT_IMG
+sudo mount -o loop $BOOT_IMG $MOUNT_POINT/_boot
+sudo cp -a boot_fs/* $MOUNT_POINT/_boot
+sudo umount $MOUNT_POINT/_boot
+
+# 创建并格式化 rootfs 文件系统
+mkdir -p rootfs_fs
+sudo cp -a $TOP_DIR/build/alpine/* rootfs_fs
+
+# 创建 rootfs 镜像
+ROOTFS_IMG_SIZE=$(du -sb rootfs_fs | cut -f1)
+truncate -s $((ROOTFS_IMG_SIZE + PAD_SIZE)) $ROOTFS_IMG
+mkfs.ext4 -L ROOTFS $ROOTFS_IMG
+sudo mount -o loop $ROOTFS_IMG $MOUNT_POINT/_rootfs
+sudo cp -a rootfs_fs/* $MOUNT_POINT/_rootfs
+sudo umount $MOUNT_POINT/_rootfs
+
+sudo rm -rf ${MOUNT_POINT}
+
+# 创建固件镜像
+FIRMWARE_SIZE=$((262144 * 512 + $ROOTFS_IMG_SIZE + 2 * $PAD_SIZE))
+FIRMWARE_SIZE=$(( ($FIRMWARE_SIZE + 511) / 512 * 512 ))
+truncate -s $FIRMWARE_SIZE $OUTPUT_IMG
+
+# 创建 GPT 分区表
+parted "$OUTPUT_IMG" mklabel msdos \
 mkpart primary fat32 32768s 262143s \
 mkpart primary ext4 262144s 100%
 
+# 设置环回设备
 LOOP_DEV=$(losetup -f --show "$OUTPUT_IMG")
-BOOT_DEV="$LOOP_DEV"p1
-ROOT_DEV="$LOOP_DEV"p2
 partprobe "$LOOP_DEV"
 
-# Generate random uuid for rootfs
-root_uuid=$(uuidgen)
-
-# Format to FAT16 file system
-mkfs.vfat -F 32 -n BOOT "${LOOP_DEV}p1"
-# Format to ext4 file system
-mkfs.ext4 -U "${root_uuid}" -L ROOTFS "${LOOP_DEV}p2"
-
-# Mount partitions
-mkdir -p ${MOUNT_POINT}/{_boot,_rootfs} 
-sudo mount "${LOOP_DEV}p1" ${MOUNT_POINT}/_boot
-sudo mount "${LOOP_DEV}p2" ${MOUNT_POINT}/_rootfs
-
-# fill boot partitions
-sudo cp $TOP_DIR/build/kernel/build/arch/arm64/boot/Image \
-    $TOP_DIR/build/kernel/build/arch/arm64/boot/dts/rockchip/rk3588-blade3-v101-linux.dtb \
-    ${MOUNT_POINT}/_boot
-
-sudo mkdir -p ${MOUNT_POINT}/_boot/extlinux
-
-sudo bash -c 'cat > '"${MOUNT_POINT}/_boot/extlinux/extlinux.conf"'' << EOF 
-label rockchip-kernel6.1
-        kernel /Image
-        fdt /rk3588-blade3-v101-linux.dtb
-        # initrd /ramdisk.img
-        append console=ttyFIQ,1500000 root=${START_DEV}p2 rw rootfstype=ext4 rootwait
-        # append console=ttyFIQ,1500000 root=${START_DEV}p2 rw init=/linuxrc rootfstype=ext4 rootwait
-EOF
-
-cat ${MOUNT_POINT}/_boot/extlinux/extlinux.conf
-
-# fill rootfs partitions
-sudo cp $TOP_DIR/build/alpine/* ${MOUNT_POINT}/_rootfs -a
-sudo mkdir -p /mnt/buildroot
-sudo mount /home/tom/project/ubuntu/ubuntu-lite-rootfs.img /mnt/buildroot
-sudo mkdir -p /mnt/buildroot/vendor
-sudo cp /home/tom/project/littleSystem/packages/alpine/vendor/* /mnt/buildroot/vendor -a
-# sudo mount /home/tom/project/rootfs.ext2 /mnt/buildroot
-sudo rsync -a --delete /mnt/buildroot/* ${MOUNT_POINT}/_rootfs
-sudo umount /mnt/buildroot
-
-if [ ! -z "$MOUNT_POINT" ]; then
-        sed -i '/\/dev\/mmcblk/d' ${MOUNT_POINT}/_rootfs/etc/fstab
-        echo "${START_DEV}p1	/boot	    vfat		defaults  1 0" >> ${MOUNT_POINT}/_rootfs/etc/fstab
-        echo "${START_DEV}p2	/       ext4		defaults  1 0" >> ${MOUNT_POINT}/_rootfs/etc/fstab
-fi
-
-# umount _boot and _rootfs
-sudo umount ${MOUNT_POINT}/_boot
-sudo umount ${MOUNT_POINT}/_rootfs
-sudo rm -rf ${MOUNT_POINT}
-
-# shrink image
-ROOT_PART_START=$(parted -ms "$OUTPUT_IMG" unit B print | tail -n 1 | cut -d ':' -f 2 | tr -d 'B')
-ROOT_BLOCK_SIZE=$(tune2fs -l "$ROOT_DEV" | grep '^Block size:' | tr -d ' ' | cut -d ':' -f 2)
-ROOT_MIN_SIZE=$(resize2fs -P "$ROOT_DEV" 2>/dev/null | grep -oP '\d+')
-
-# shrink fs
-e2fsck -f -p "$ROOT_DEV"
-resize2fs -p "$ROOT_DEV" "$ROOT_MIN_SIZE"
-
-# shrink partition
-PART_END=$((ROOT_PART_START + (ROOT_MIN_SIZE * ROOT_BLOCK_SIZE)))
-parted ---pretend-input-tty "$OUTPUT_IMG" <<EOF
-unit B
-resizepart 2 $PART_END
-Yes
-quit
-EOF
+# 将 boot 和 rootfs 镜像复制到固件镜像中
+dd if=$BOOT_IMG of="${LOOP_DEV}p1" conv=notrunc
+dd if=$ROOTFS_IMG of="${LOOP_DEV}p2" conv=notrunc
 
 losetup -d "$LOOP_DEV"
 
-# truncate free space
-FREE_START=$(parted -ms "$OUTPUT_IMG" unit B print free | tail -1 | cut -d ':' -f 2 | tr -d 'B')
-truncate -s "$FREE_START" "$OUTPUT_IMG"
-
-# Write uboot and idbloader
+# 写入 uboot 和 idbloader
 dd if=$TOP_DIR/build/uboot/build/idbloader.img of="$OUTPUT_IMG" seek=64 conv=notrunc
 dd if=$TOP_DIR/build/uboot/build/uboot.itb of="$OUTPUT_IMG" seek=16384 conv=notrunc
+
+# 显示镜像大小
 ls -lh "$OUTPUT_IMG"
+
+# 清理
+rm -rf boot_fs rootfs_fs

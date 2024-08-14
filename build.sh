@@ -45,9 +45,9 @@ function build_image() {
 
 function build_all() {
     echo "Building All..."
-    # build_uboot
-    # build_kernel
-    # build_alpine
+    build_uboot
+    build_kernel
+    build_alpine
     build_image
 }
 
