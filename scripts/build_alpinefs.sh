@@ -15,6 +15,8 @@ fi
 
 sudo mkdir -p "$ROOTFS_DIR/etc"
 echo "nameserver 8.8.8.8 " | sudo tee $ROOTFS_DIR/etc/resolv.conf > /dev/null
+sed -i 's|^.*|https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/main/|g' $ROOTFS_DIR/etc/apk/repositories
+sed -i 'a https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/community/' $ROOTFS_DIR/etc/apk/repositories
 
 sudo chroot $ROOTFS_DIR /bin/sh -c "apk update && \
 	apk add alpine-base openssh-server mkinitfs parted e2fsprogs-extra chrony \
@@ -23,16 +25,12 @@ sudo chroot $ROOTFS_DIR /bin/sh -c "apk update && \
 	rc-update add networking default && \
 	rc-update add sysctl boot && \
 	rc-update add hostname boot && \
-	rc-update add crond default && \
-	rc-update add chronyd default && \
+	rc-update add chronyd boot && \
 	rc-update add acpid default && \
-	rc-update add klogd default && \
 	rc-update add dhcpcd default && \
 	rc-update add syslog boot && \
-	rc-update add machine-id boot && \
 	rc-update add modules boot && \
-	rc-update add hwclock boot && \
-	rc-update add swap boot"
+	rc-update add hwclock boot"
 
 cp $MODULE_DIR/* $ROOTFS_DIR -a
 mkdir -p $ROOTFS_DIR/boot

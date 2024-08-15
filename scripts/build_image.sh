@@ -37,7 +37,7 @@ sudo bash -c 'cat > boot_fs/extlinux/extlinux.conf' << EOF
 label rockchip-kernel6.1
         kernel /Image
         fdt /rk3588-az04.dtb
-        append console=ttyFIQ,1500000 root=${START_DEV}p2 rw rootfstype=ext4 rootwait
+        append console=ttyFIQ,1500000 root=${START_DEV}p2 rw rootfstype=ext4 rootwait firmware_class.path=/vendor/etc/firmware/
 EOF
 
 # 创建 boot 镜像
@@ -49,7 +49,7 @@ if [ "$BOOT_IMG_SIZE" -ge "$MAX_BOOT_SIZE" ]; then
     exit 1
 fi
 
-truncate -s $BOOT_IMG_SIZE $BOOT_IMG
+fallocate -l $BOOT_IMG_SIZE $BOOT_IMG
 mkfs.vfat -F 32 -n BOOT $BOOT_IMG
 sudo mount -o loop $BOOT_IMG $MOUNT_POINT/_boot
 sudo cp -a boot_fs/* $MOUNT_POINT/_boot
@@ -60,8 +60,8 @@ mkdir -p rootfs_fs
 sudo cp -a $TOP_DIR/build/alpine/* rootfs_fs
 
 # 创建 rootfs 镜像
-ROOTFS_IMG_SIZE=$(du -sb rootfs_fs | cut -f1)
-truncate -s $((ROOTFS_IMG_SIZE + PAD_SIZE)) $ROOTFS_IMG
+ROOTFS_IMG_SIZE=$(( $(du -sb rootfs_fs | cut -f1) + PAD_SIZE))
+fallocate -l $ROOTFS_IMG_SIZE $ROOTFS_IMG
 mkfs.ext4 -L ROOTFS $ROOTFS_IMG
 sudo mount -o loop $ROOTFS_IMG $MOUNT_POINT/_rootfs
 sudo cp -a rootfs_fs/* $MOUNT_POINT/_rootfs
@@ -70,12 +70,12 @@ sudo umount $MOUNT_POINT/_rootfs
 sudo rm -rf ${MOUNT_POINT}
 
 # 创建固件镜像
-FIRMWARE_SIZE=$((262144 * 512 + $ROOTFS_IMG_SIZE + 2 * $PAD_SIZE))
+FIRMWARE_SIZE=$((262144 * 512 + $ROOTFS_IMG_SIZE + $PAD_SIZE))
 FIRMWARE_SIZE=$(( ($FIRMWARE_SIZE + 511) / 512 * 512 ))
-truncate -s $FIRMWARE_SIZE $OUTPUT_IMG
+fallocate -l $FIRMWARE_SIZE $OUTPUT_IMG
 
 # 创建 GPT 分区表
-parted "$OUTPUT_IMG" mklabel msdos \
+parted "$OUTPUT_IMG" mklabel gpt \
 mkpart primary fat32 32768s 262143s \
 mkpart primary ext4 262144s 100%
 
