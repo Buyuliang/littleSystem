@@ -16,3 +16,11 @@ start() {
     start-stop-daemon --start --background --exec "$command"
     eend $?
 }
+
+stop() {
+    ebegin "Stopping first boot script"
+    start-stop-daemon --stop --pidfile "$pidfile"
+    rc-update del first-boot sysinit
+    rm /etc/init.d/first-boot /usr/bin/first-boot
+    eend $?
+}
