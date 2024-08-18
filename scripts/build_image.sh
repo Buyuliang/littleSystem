@@ -14,7 +14,7 @@ ROOTFS_IMG="rootfs.img"
 START_DEV="/dev/mmcblk0"
 MODULE_DIR="$TOP_DIR/build/_module"
 BLOCK_SIZE=512
-PAD_SIZE=$((40 * 1024 * 2 * BLOCK_SIZE))
+PAD_SIZE=$((50 * 1024 * 2 * BLOCK_SIZE))
 
 # 删除旧的镜像和挂载点
 sudo umount ${MOUNT_POINT}/_boot || true

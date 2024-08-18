@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+description="adb"
+
+command="/usr/bin/usbdevice"
+command_args="start"
+command_background=true
+pidfile="/run/adb.pid"
+
+depend() {
+    after * 
+}
+
+start() {
+    ebegin "Running adb"
+    start-stop-daemon --start --background --exec "$command" -- $command_args
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping adb"
+    start-stop-daemon --stop --pidfile "$pidfile"
+    eend $?
+}
