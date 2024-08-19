@@ -19,7 +19,7 @@ sed -i 's|^.*|https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/main/|g' $ROOTFS
 sed -i 'a https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/community/' $ROOTFS_DIR/etc/apk/repositories
 
 sudo chroot $ROOTFS_DIR /bin/sh -c "apk update && \
-	apk add alpine-base openssh-server mkinitfs parted e2fsprogs-extra chrony bash \
+	apk add alpine-base openssh-server mkinitfs parted e2fsprogs-extra chrony bash gptfdisk \
 	   acpid-openrc dhcpcd dhclient lsblk pciutils wpa_supplicant networkmanager networkmanager-cli bluez iw iwd && \
 	rc-update add sshd default && \
 	rc-update add networking default && \
