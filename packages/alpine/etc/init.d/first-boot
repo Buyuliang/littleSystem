@@ -13,7 +13,7 @@ depend() {
 
 start() {
     ebegin "Running first boot script"
-    start-stop-daemon --start --background --exec "$command"
+    start-stop-daemon --start --background --make-pidfile --pidfile "$pidfile" --exec "$command"
     eend $?
 }
 

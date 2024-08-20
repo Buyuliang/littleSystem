@@ -15,6 +15,8 @@ START_DEV="/dev/mmcblk0"
 MODULE_DIR="$TOP_DIR/build/_module"
 BLOCK_SIZE=512
 PAD_SIZE=$((50 * 1024 * 2 * BLOCK_SIZE))
+BOOT_PAD_SIZE=$((50 * 1024 * 2 * BLOCK_SIZE))
+ROOTFS_PAD_SIZE=$((60 * 1024 * 2 * BLOCK_SIZE))
 
 # 删除旧的镜像和挂载点
 sudo umount ${MOUNT_POINT}/_boot || true
@@ -60,7 +62,7 @@ mkdir -p rootfs_fs
 sudo cp -a $TOP_DIR/build/alpine/* rootfs_fs
 
 # 创建 rootfs 镜像
-ROOTFS_IMG_SIZE=$(( $(du -sb rootfs_fs | cut -f1) + PAD_SIZE))
+ROOTFS_IMG_SIZE=$(( $(du -sb rootfs_fs | cut -f1) + ROOTFS_PAD_SIZE))
 fallocate -l $ROOTFS_IMG_SIZE $ROOTFS_IMG
 mkfs.ext4 -L ROOTFS $ROOTFS_IMG
 sudo mount -o loop $ROOTFS_IMG $MOUNT_POINT/_rootfs

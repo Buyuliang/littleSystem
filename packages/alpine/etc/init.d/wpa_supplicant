@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+description="wpa_supplicant"
+
+command="wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf"
+command_background=true
+pidfile="/run/wpa_supplicant.pid"
+
+depend() {
+    after * 
+}
+
+start() {
+    ebegin "Running wpa_supplicant"
+    start-stop-daemon --start --background --make-pidfile --pidfile "$pidfile" --exec /bin/sh -- -c "$command"
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping wpa_supplicant"
+    start-stop-daemon --stop --pidfile "$pidfile"
+    eend $?
+}
