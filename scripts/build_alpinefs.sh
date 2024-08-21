@@ -23,7 +23,8 @@ sed -i 'a https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/community/' $ROOTFS_
 
 sudo chroot $ROOTFS_DIR /bin/sh -c "apk update && \
 			apk add alpine-base openssh-server openssh-client-common mkinitfs parted e2fsprogs-extra chrony bash gptfdisk \
-			acpid-openrc dhcpcd dhclient lsblk pciutils wpa_supplicant networkmanager networkmanager-cli bluez iw iwd ethtool hdparm gcompat fio i2c-tools eudev usbutils && \
+			acpid-openrc dhcpcd dhclient lsblk pciutils wpa_supplicant networkmanager networkmanager-cli bluez iw iwd ethtool \
+			hdparm gcompat fio i2c-tools eudev usbutils libdrm-dev libpng-dev && \
 			rc-update add sshd default && \
 			rc-update add networking default && \
 			rc-update add sysctl boot && \
@@ -53,3 +54,9 @@ chmod a+x $ROOTFS_DIR/etc/init.d/wpa_supplicant
 chroot $ROOTFS_DIR /bin/sh -c "mkdir -p /var/run/wpa_supplicant"
 chroot $ROOTFS_DIR /bin/sh -c "chown root:root /var/run/wpa_supplicant"
 chroot $ROOTFS_DIR /bin/sh -c "chmod 755 /var/run/wpa_supplicant"
+
+### display_png
+chroot $ROOTFS_DIR /bin/sh -c "chmod 777 /usr/bin/display_png"
+
+### brcm_patchram_plus1
+chroot $ROOTFS_DIR /bin/sh -c "chmod 777 /usr/bin/brcm_patchram_plus1"
