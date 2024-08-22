@@ -1157,7 +1157,7 @@ index 000000000..1eeb154bc
 +};
 +
 +&dsi0 {
-+	status = "okay";
++	status = "disabled";
 +	rockchip,lane-rate = <1000>;
 +	dsi0_panel: panel@0 {
 +		status = "okay";
@@ -1767,7 +1767,7 @@ index 000000000..1eeb154bc
 + * when dsi0 is enabled
 + */
 +&dsi0 {
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&dsi0_in_vp2 {
@@ -1775,7 +1775,7 @@ index 000000000..1eeb154bc
 +};
 +
 +&dsi0_in_vp3 {
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&dsi0_panel {
@@ -1798,7 +1798,7 @@ index 000000000..1eeb154bc
 +};
 +
 +&dsi1_in_vp3 {
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&dsi1_panel {
@@ -1816,11 +1816,11 @@ index 000000000..1eeb154bc
 +};
 +
 +&mipi_dcphy0 {
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&mipi_dcphy1 {
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&backlight {
@@ -1830,7 +1830,7 @@ index 000000000..1eeb154bc
 +
 +&backlight0 {
 +	pwms = <&pwm3 0 25000 0>;
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&backlight1 {
@@ -1843,7 +1843,7 @@ index 000000000..1eeb154bc
 +};
 +
 +&route_dsi0 {
-+	status = "okay";
++	status = "disabled";
 +	connect = <&vp3_out_dsi0>;
 +};
 +
