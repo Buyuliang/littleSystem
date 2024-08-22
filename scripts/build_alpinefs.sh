@@ -50,8 +50,10 @@ cp $PACKAGES_DIR/* $ROOTFS_DIR -a
 cat << EOF | chroot $ROOTFS_DIR /bin/sh
 chmod a+x /etc/init.d/first-boot /usr/bin/first-boot
 chmod a+x /etc/init.d/adbd
+chmod a+x /etc/init.d/fan
 rc-update add first-boot sysinit
 rc-update add adbd default
+rc-update add fan default
 
 ### wpa_supplicant
 chmod a+x /etc/init.d/wpa_supplicant

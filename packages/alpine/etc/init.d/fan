@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+description="fan"
+
+command="echo 0 > /sys/devices/platform/pwm-fan/hwmon/hwmon7/pwm1"
+command_background=true
+pidfile="/run/fan.pid"
+
+depend() {
+    after * 
+}
+
+start() {
+    ebegin "Running fan"
+    start-stop-daemon --start --background --make-pidfile --pidfile "$pidfile" --exec /bin/sh -- -c "$command"
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping fan"
+    start-stop-daemon --stop --pidfile "$pidfile"
+    eend $?
+}
