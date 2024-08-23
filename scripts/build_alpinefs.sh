@@ -92,4 +92,9 @@ export NEW_HOSTNAME=az04a
 hostname \$NEW_HOSTNAME
 echo \$NEW_HOSTNAME > /etc/hostname
 sed -i "s/localhost.localdomain/\$NEW_HOSTNAME.localdomain/g" /etc/hosts
+
+# /etc/fstab
+sed -i '/[[:space:]]\/tmp[[:space:]]/d' /etc/fstab
+echo 'tmpfs   /tmp    tmpfs   defaults,size=100%  0  0' | sudo tee -a /etc/fstab
+
 EOF
