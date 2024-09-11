@@ -4,7 +4,7 @@ set -euo pipefail
 
 KERNEL_DIR="$TOP_DIR/build/kernel"
 MODULE_DIR="$TOP_DIR/build/_module"
-KERNEL_PATCH_DIR="$TOP_DIR/patch/kernel"
+KERNEL_PATCH_DIR="$TOP_DIR/patch/kernel/$BOARD"
 KERNEL_VERSION=6.1
 mkdir -p $MODULE_DIR
 
@@ -22,9 +22,9 @@ fi
 
 export ARCH=arm64
 export CROSS_COMPILE=aarch64-linux-gnu-
-time make O=build rockchip_linux_defconfig
+time make O=build $BOARD_CONFIG
 time make O=build Image -j$(nproc)
-time make O=build rockchip/rk3588-az04.dtb
+time make O=build $BOARD_DTS_FILE
 time make O=build modules modules_install INSTALL_MOD_PATH=$MODULE_DIR
 
 if [ -d $KERNEL_PATCH_DIR/$KERNEL_VERSION ] && [ "$(ls -A $KERNEL_PATCH_DIR/$KERNEL_VERSION)" ]; then

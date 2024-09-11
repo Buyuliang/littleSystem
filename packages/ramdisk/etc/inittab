@@ -1,4 +1,5 @@
 ::sysinit:/etc/init.d/rcS
+console::respawn:-/bin/sh
 # Stuff to do when restarting the init process
 ::restart:/sbin/init
 # Stuff to do before rebooting

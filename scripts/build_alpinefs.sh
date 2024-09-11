@@ -88,8 +88,8 @@ done
 addgroup \$NEW_USER wheel
 
 # hostname
-export NEW_HOSTNAME=az04a
-hostname \$NEW_HOSTNAME
+export NEW_HOSTNAME=\$BOARD_HOSTNAME
+# hostname \$NEW_HOSTNAME
 echo \$NEW_HOSTNAME > /etc/hostname
 sed -i "s/localhost.localdomain/\$NEW_HOSTNAME.localdomain/g" /etc/hosts
 

@@ -1,0 +1,18 @@
+diff --git a/arch/arm64/configs/rockchip_linux_defconfig b/arch/arm64/configs/rockchip_linux_defconfig
+index b812aa707..d90839d6f 100644
+--- a/arch/arm64/configs/rockchip_linux_defconfig
++++ b/arch/arm64/configs/rockchip_linux_defconfig
+@@ -218,6 +218,7 @@ CONFIG_USB_RTL8152=y
+ CONFIG_WL_ROCKCHIP=y
+ CONFIG_WIFI_BUILD_MODULE=y
+ CONFIG_AP6XXX=m
++CONFIG_BCMDHD_PCIE=y
+ CONFIG_INPUT_FF_MEMLESS=y
+ CONFIG_INPUT_EVDEV=y
+ CONFIG_KEYBOARD_ADC=y
+@@ -665,3 +666,5 @@ CONFIG_RCU_CPU_STALL_TIMEOUT=60
+ CONFIG_FUNCTION_TRACER=y
+ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_LKDTM=y
++CONFIG_SENSORS_PWM_FAN=y
++CONFIG_GPIO_PCA953X=y

@@ -33,7 +33,7 @@ rsync -av $PACKAGES_DIR/* $ROOTFS_DIR
 
 mkdir -p initrd
 sudo rsync -av $ROOTFS_DIR/* initrd
-sudo rsync -av $TOP_DIR/packages/initrd/* .
+sudo rsync -av $TOP_DIR/packages/initrd/* initrd
 pushd initrd
 sudo mv linuxrc init
 sudo bash -c "find . |cpio -o -H newc| gzip > ../initrd.img"

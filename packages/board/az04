@@ -1,0 +1,3 @@
+export BOARD_DTS_FILE=rockchip/rk3588-az04.dtb
+export BOARD_HOSTNAME=az04
+export BOARD_CONFIG=rockchip_linux_defconfig
