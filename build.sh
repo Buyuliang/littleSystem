@@ -4,7 +4,7 @@ set -euo pipefail
 
 # 检查至少有一个参数
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|all} [board]"
+    echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|image-ram|all} [board]"
     exit 1
 fi
 
@@ -54,6 +54,13 @@ function build_image() {
     popd
 }
 
+function build_ram_image() {
+    echo "Building RAM Image for $BOARD..."
+    pushd $BUILD_DIR
+    bash $TOP_DIR/scripts/build_ramdisk_image.sh
+    popd
+}
+
 function build_all() {
     echo "Building All for $BOARD..."
     build_uboot
@@ -80,12 +87,15 @@ case "$ARG" in
     image)
         build_image
         ;;
-    all|*)
+    image-ram)
+        build_ram_image
+        ;;
+    all)
         build_all
         ;;
     *)
         echo "Invalid argument: $ARG"
-        echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|all} [board]"
+        echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|image-ram|all} [board]"
         exit 1
         ;;
 esac

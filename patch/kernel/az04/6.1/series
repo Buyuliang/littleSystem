@@ -1,0 +1,5 @@
+# Note that newline characters should be in LF format
+001-rockchip_linux_defconfig.patch
+002-rk3588-az04-dts.patch
+003-cancel-localversion.patch
+004-add-csf-support.patch

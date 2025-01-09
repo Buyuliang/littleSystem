@@ -1,6 +1,6 @@
 #! /bin/bash
 
-set -euo pipefail
+set -xeo pipefail
 
 ROOTFS_TAR="busybox.tar.bz2"
 ROOTFS_PAK="$TOP_DIR/build/_busybox"
@@ -26,10 +26,12 @@ if [ ! -d "$ROOTFS_DIR" ]; then
     popd
 fi
 
-rsync -av $ROOTFS_PAK/_install/* $ROOTFS_DIR
+sudo rsync -av $ROOTFS_PAK/_install/* $ROOTFS_DIR
 sudo chroot $ROOTFS_DIR /bin/sh -c "mkdir -p dev etc mnt proc var tmp sys root lib"
-rsync -av $PACKAGES_DIR/* $ROOTFS_DIR
+sudo rsync -av $PACKAGES_DIR/* $ROOTFS_DIR
 # rsync -av $MODULE_DIR/* $ROOTFS_DIR
+
+### initrd
 
 mkdir -p initrd
 sudo rsync -av $ROOTFS_DIR/* initrd
@@ -41,13 +43,25 @@ popd
 
 ### package ramdisk
 
-dd if=/dev/zero of=ramdisk bs=1k count=8192
-mkfs.ext2 -F ramdisk
-sudo mkdir -p /mnt/initrd
-sudo mount -t ext2 ramdisk /mnt/initrd
-sudo rsync -av $ROOTFS_DIR/* /mnt/initrd/ -a
-sudo umount /mnt/initrd
-sudo sh -c 'gzip --best -c ramdisk > ramdisk.gz'
-mkimage -n "ramdisk" -A arm -O linux -T ramdisk -C gzip -d ramdisk.gz ramdisk.img
+# dd if=/dev/zero of=ramdisk bs=1k count=8192
+# mkfs.ext2 -F ramdisk
+# sudo mkdir -p /mnt/initrd
+# sudo mount -t ext2 ramdisk /mnt/initrd
+# sudo rsync -av $ROOTFS_DIR/* /mnt/initrd/ -a
+# sudo umount /mnt/initrd
+# sudo sh -c 'gzip --best -c ramdisk > ramdisk.gz'
+# mkimage -n "ramdisk" -A arm -O linux -T ramdisk -C gzip -d ramdisk.gz ramdisk.img
 
-rm ramdisk ramdisk.gz
+# rm ramdisk ramdisk.gz
+
+### initramfs
+mkdir -p initramfs
+sudo rsync -av $ROOTFS_DIR/* initramfs
+sudo rsync -av $TOP_DIR/packages/initrd/* initramfs
+sudo rm initramfs.cpio.gz || true
+pushd initramfs
+sudo mv linuxrc init
+sudo bash -c "find . | cpio -H newc -ov --owner root:root -F ../initramfs.cpio"
+popd
+sudo gzip initramfs.cpio
+sudo mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz uRamdisk

@@ -6,12 +6,22 @@ RKBIN_DIR="$TOP_DIR/build/rkbin"
 UBOOT_DIR="$TOP_DIR/build/uboot"
 UBOOT_BUILD_DIR="$UBOOT_DIR/build"
 UBOOT_PATCH_DIR="$TOP_DIR/patch/uboot/$BOARD"
+RKBIN_COMMIT_ID="a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0"
+UBOOT_COMMIT_ID="63c55618fbdc36333db4cf12f7d6a28f0a178017"
 if [ ! -d "$RKBIN_DIR" ]; then
     git clone --depth=1 https://github.com/rockchip-linux/rkbin.git -b master $RKBIN_DIR
+    pushd $RKBIN_DIR
+    git fetch --depth 1 origin $RKBIN_COMMIT_ID
+    git checkout $RKBIN_COMMIT_ID
+    popd
 fi
 
 if [ ! -d "$UBOOT_DIR" ]; then
     git clone --depth=1 https://github.com/rockchip-linux/u-boot.git -b next-dev $UBOOT_DIR
+    pushd $UBOOT_DIR
+    git fetch --depth 1 origin $UBOOT_COMMIT_ID
+    git checkout $UBOOT_COMMIT_ID
+    popd
 fi
 
 pushd $UBOOT_DIR
