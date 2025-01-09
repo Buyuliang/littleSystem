@@ -1,0 +1,19 @@
+diff --git a/scripts/setlocalversion b/scripts/setlocalversion
+index af4754a35..40e5d3d81 100755
+--- a/scripts/setlocalversion
++++ b/scripts/setlocalversion
+@@ -139,7 +139,6 @@ elif [ "${LOCALVERSION+set}" != "set" ]; then
+ 	# If the variable LOCALVERSION is set (including being set
+ 	# to an empty string), we don't want to append a plus sign.
+ 	scm=$(scm_version --short)
+-	res="$res${scm:++}"
+ fi
+ 
+ echo "$res"
+--- a/arch/arm64/configs/rockchip_linux_defconfig
++++ b/arch/arm64/configs/rockchip_linux_defconfig
+@@ -668,3 +668,4 @@
+ CONFIG_LKDTM=y
+ CONFIG_SENSORS_PWM_FAN=y
+ CONFIG_GPIO_PCA953X=y
++CONFIG_LOCALVERSION_AUTO=n
