@@ -18,7 +18,6 @@ apply_patches() {
 
         patch_path="${patch_dir%/}/$patch_file"
 
-        ls -l $patch_path
         if [[ -f "$patch_path" ]]; then
             echo "Applying patch: $patch_file"
             patch -Np1 < "$patch_path" || { echo "Failed to apply patch: $patch_path"; exit 1; }  # 根据实际情况可能需要调整 `-p1`
