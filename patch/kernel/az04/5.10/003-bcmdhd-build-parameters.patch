@@ -1,0 +1,13 @@
+diff --git a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/Makefile b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/Makefile
+index efc77d7ff..36b95ef48 100755
+--- a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/Makefile
++++ b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/Makefile
+@@ -31,7 +31,7 @@ CONFIG_MACH_PLATFORM := y
+ 
+ DHDCFLAGS = -Wall -Wstrict-prototypes -Wno-date-time                      \
+ 	-Wno-implicit-fallthrough -Wno-declaration-after-statement            \
+-	-Wno-vla -Wno-vla-extension                                           \
++	-Wno-address -Wno-vla                                                 \
+ 	-Dlinux -DLINUX -DBCMDRIVER                                           \
+ 	-DBCMDONGLEHOST -DBCMDMA32 -DBCMFILEIMAGE                             \
+ 	-DDHDTHREAD -DDHD_DEBUG -DSHOW_EVENTS -DGET_OTP_MAC_ENABLE            \

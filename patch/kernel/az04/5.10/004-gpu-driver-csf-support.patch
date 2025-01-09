@@ -1,0 +1,12 @@
+diff --git a/arch/arm64/configs/rockchip_linux_defconfig b/arch/arm64/configs/rockchip_linux_defconfig
+index 3eeead476..8100f7ead 100644
+--- a/arch/arm64/configs/rockchip_linux_defconfig
++++ b/arch/arm64/configs/rockchip_linux_defconfig
+@@ -362,6 +362,7 @@ CONFIG_MALI450=y
+ # CONFIG_MALI400_PROFILING is not set
+ CONFIG_MALI_SHARED_INTERRUPTS=y
+ CONFIG_MALI_DT=y
++CONFIG_MALI_CSF_SUPPORT=y
+ CONFIG_MALI_DEVFREQ=y
+ CONFIG_MALI_MIDGARD=y
+ CONFIG_MALI_EXPERT=y

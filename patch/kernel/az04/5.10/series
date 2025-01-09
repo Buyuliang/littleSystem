@@ -1,0 +1,6 @@
+# Note that newline characters should be in LF format
+001-rk3588-config.patch
+002-az04-dts.patch
+003-bcmdhd-build-parameters.patch
+004-gpu-driver-csf-support.patch
+005-enable-sensors-pwm-fan.patch
