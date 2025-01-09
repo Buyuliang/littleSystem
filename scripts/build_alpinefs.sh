@@ -19,7 +19,8 @@ echo "nameserver 8.8.8.8 " | sudo tee $ROOTFS_DIR/etc/resolv.conf > /dev/null
 echo "" > $ROOTFS_DIR/etc/apk/repositories
 sudo  echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/main/" >> $ROOTFS_DIR/etc/apk/repositories
 sudo  echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/v3.20/community/" >> $ROOTFS_DIR/etc/apk/repositories
-sudo  echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> $ROOTFS_DIR/etc/apk/repositories
+# sudo  echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> $ROOTFS_DIR/etc/apk/repositories
+sudo  echo "http://mirrors.tuna.tsinghua.edu.cn/alpine/edge/testing" >> $ROOTFS_DIR/etc/apk/repositories
 
 ### prompt message ###
 # gcompat 提供了 glibc 兼容层
