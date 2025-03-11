@@ -11,7 +11,8 @@ RUN apt update && apt purge needrestart -y && apt upgrade -y && \
         debootstrap flex libssl-dev bc rsync kmod cpio xz-utils fakeroot parted \
         udev dosfstools uuid-runtime git-lfs device-tree-compiler python2 python3 \
         python-is-python3 fdisk bc debhelper python3-pyelftools python3-setuptools \
-        python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools
+        python3-distutils python3-pkg-resources swig libfdt-dev libpython3-dev dctrl-tools \
+        pkg-config libncurses-dev
 
 # 为 sudo 组添加不需要密码的权限
 RUN echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers

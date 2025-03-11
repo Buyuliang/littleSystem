@@ -58,10 +58,12 @@ popd
 mkdir -p initramfs
 sudo rsync -av $ROOTFS_DIR/* initramfs
 sudo rsync -av $TOP_DIR/packages/initrd/* initramfs
+# sudo rsync -av $TOP_DIR/build/flash-firmware/* initramfs
 sudo rm initramfs.cpio.gz || true
 pushd initramfs
 sudo mv linuxrc init
 sudo bash -c "find . | cpio -H newc -ov --owner root:root -F ../initramfs.cpio"
 popd
+du -sh initramfs.cpio
 sudo gzip initramfs.cpio
 sudo mkimage -A arm64 -O linux -T ramdisk -d initramfs.cpio.gz uRamdisk

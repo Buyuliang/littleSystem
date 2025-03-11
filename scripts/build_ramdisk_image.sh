@@ -32,6 +32,7 @@ sudo cp $TOP_DIR/build/kernel/build/arch/arm64/boot/Image \
 sudo mv boot_fs/$(basename $TOP_DIR/build/kernel/build/arch/arm64/boot/dts/$BOARD_DTS_FILE)  boot_fs/${BOARD}.dtb
 # sudo cp $TOP_DIR/build/uRamdisk boot_fs/initrd.img
 sudo cp $TOP_DIR/build/uRamdisk boot_fs/uRamdisk
+# sudo cp $TOP_DIR/build/test-rootfs/uRamdisk boot_fs/uRamdisk
 sudo mkdir -p boot_fs/extlinux
 sudo bash -c 'cat > boot_fs/extlinux/extlinux.conf' << EOF 
 label rockchip-kernel

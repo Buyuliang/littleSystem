@@ -11,8 +11,8 @@ fi
 export TOP_DIR=$(dirname $(realpath $0))
 echo "TOP_DIR: $TOP_DIR"
 BUILD_DIR="$TOP_DIR/build"
-
-mkdir -p $BUILD_DIR > /dev/null 2>&1
+export OUTPUT_DIR=$BUILD_DIR/output
+mkdir -p $BUILD_DIR $OUTPUT_DIR > /dev/null 2>&1
 
 # 设置 BOARD 作为全局环境变量
 export BOARD=${2:-az04}

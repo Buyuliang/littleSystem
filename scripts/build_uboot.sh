@@ -30,8 +30,7 @@ if [ -d $UBOOT_PATCH_DIR ] && [ "$(ls -A $UBOOT_PATCH_DIR)" ]; then
     for i in $UBOOT_PATCH_DIR/*; do patch -Np1 < "$i"; done
 fi
 
-export ARCH=arm64
-export CROSS_COMPILE=aarch64-linux-gnu-
+export ARCH=arm CROSS_COMPILE=aarch64-linux-gnu-
 time make O=$UBOOT_BUILD_DIR rk3588_defconfig
 time make O=$UBOOT_BUILD_DIR -j$(nproc)
 
@@ -50,10 +49,23 @@ export srctree=$UBOOT_BUILD_DIR; \
 cp $RKBIN_DIR/bin/rk35/rk3588_bl32_v1.15.bin $UBOOT_BUILD_DIR/tee.bin
 $UBOOT_BUILD_DIR/tools/mkimage -f $UBOOT_BUILD_DIR/uboot.its -E $UBOOT_BUILD_DIR/uboot.itb
 
+cp $UBOOT_BUILD_DIR/idbloader.img  $UBOOT_BUILD_DIR/uboot.itb $OUTPUT_DIR
 popd
 
 if [ -d $UBOOT_PATCH_DIR ] && [ "$(ls -A $UBOOT_PATCH_DIR)" ]; then
     for i in $UBOOT_PATCH_DIR/*; do patch -Np1 -R < "$i"; done
 fi
+
+popd
+
+pushd $OUTPUT_DIR
+# 1. 创建固定大小的空白文件
+dd if=/dev/zero of=u-boot-rockchip.bin bs=1k count=$((0x4000))
+
+# 2. 写入 idbloader.img（从 0 位置开始）
+dd if=idbloader.img of=u-boot-rockchip.bin bs=1k seek=0 conv=notrunc
+
+# 3. 写入 uboot.itb（确保从 0x4000 - 0x40 处开始）
+dd if=uboot.itb of=u-boot-rockchip.bin bs=1k seek=$((0x4000 - 0x40)) conv=notrunc
 
 popd

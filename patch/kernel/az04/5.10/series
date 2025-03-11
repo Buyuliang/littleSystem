@@ -4,3 +4,4 @@
 003-bcmdhd-build-parameters.patch
 004-gpu-driver-csf-support.patch
 005-enable-sensors-pwm-fan.patch
+006-add-work-led.patch

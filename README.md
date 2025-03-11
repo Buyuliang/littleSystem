@@ -21,26 +21,26 @@ docker run --privileged -it \
 ## into docker build
 ### uboot
 ```bash
-./build uboot az04
+./build.sh uboot az04
 ```
 
 ### kernel
 ```bash
-./build kernel az04
+./build.sh kernel az04
 ```
 
 ### alpine
 ```bash
-./build alpine az04
+./build.sh alpine az04
 ```
 
 ### image
 ```bash
-./build image az04
+./build.sh image az04
 ```
 
 ### all
 ```bash
 all: uboot kernel alpine image
-./build all
+./build.sh all
 ```
