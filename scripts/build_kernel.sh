@@ -35,7 +35,7 @@ mkdir -p $MODULE_DIR
 
 # 补丁列表文件名
 SERIES_FILE="$KERNEL_PATCH_DIR/$KERNEL_VERSION/series"
-SERIES_FLAG=1
+SERIES_FLAG=0
 
 # 检查 series 文件是否存在
 if [[ ! -f "$SERIES_FILE" ]]; then
@@ -49,7 +49,7 @@ fi
 
 pushd $KERNEL_DIR
 
-if [ -d $KERNEL_PATCH_DIR/$KERNEL_VERSION ] && [ "$(ls -A $KERNEL_PATCH_DIR/$KERNEL_VERSION)" ] && [ $SERIES_FLAG ]; then
+if [ -d $KERNEL_PATCH_DIR/$KERNEL_VERSION ] && [ "$(ls -A $KERNEL_PATCH_DIR/$KERNEL_VERSION)" ] && [ $SERIES_FLAG == 1 ]; then
     apply_patches "$SERIES_FILE" "$KERNEL_PATCH_DIR/$KERNEL_VERSION"
 fi
 
@@ -60,7 +60,7 @@ time make O=build $BOARD_DTS_FILE
 time make O=build -j$(nproc) modules
 time make O=build -j$(nproc) modules_install INSTALL_MOD_PATH=$MODULE_DIR
 
-if [ -d $KERNEL_PATCH_DIR/$KERNEL_VERSION ] && [ "$(ls -A $KERNEL_PATCH_DIR/$KERNEL_VERSION)" ] && [ $SERIES_FLAG ]; then
+if [ -d $KERNEL_PATCH_DIR/$KERNEL_VERSION ] && [ "$(ls -A $KERNEL_PATCH_DIR/$KERNEL_VERSION)" ] && [ $SERIES_FLAG == 1 ]; then
     reverse_patches "$SERIES_FILE" "$KERNEL_PATCH_DIR/$KERNEL_VERSION"
 fi
 

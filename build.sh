@@ -4,7 +4,7 @@ set -euo pipefail
 
 # 检查至少有一个参数
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|image-ram|all} [board]"
+    echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|image-ram|all} [board] rootfs"
     exit 1
 fi
 
@@ -18,6 +18,10 @@ mkdir -p $BUILD_DIR $OUTPUT_DIR > /dev/null 2>&1
 export BOARD=${2:-az04}
 source $TOP_DIR/packages/board/$BOARD
 echo "Building for board: $BOARD"
+
+# 设置根文件系统
+#export RootFileSystem=${3:-ubuntu}
+export RootFileSystem=${3:-alpine}
 
 function build_uboot() {
     echo "Building U-Boot for $BOARD..."
@@ -36,7 +40,16 @@ function build_kernel() {
 function build_alpine() {
     echo "Building Alpine Linux for $BOARD..."
     pushd $BUILD_DIR
+    export RootFileSystem="alpine"
     bash $TOP_DIR/scripts/build_alpinefs.sh
+    popd
+}
+
+function build_ubuntu() {
+    echo "Building Ubuntu Linux for $BOARD..."
+    pushd $BUILD_DIR
+    export RootFileSystem="ubuntu"
+    bash $TOP_DIR/scripts/build_ubuntufs.sh
     popd
 }
 
@@ -84,6 +97,9 @@ case "$ARG" in
     alpine)
         build_alpine
         ;;
+    ubuntu)
+        build_ubuntu
+        ;;
     image)
         build_image
         ;;
@@ -95,7 +111,7 @@ case "$ARG" in
         ;;
     *)
         echo "Invalid argument: $ARG"
-        echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|image-ram|all} [board]"
+        echo "Usage: $0 {uboot|kernel|ramdisk|alpine|image|image-ram|all} [board] rootfs"
         exit 1
         ;;
 esac

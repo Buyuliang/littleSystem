@@ -1,0 +1,13 @@
+[Unit]
+Description=First boot grow rootfs
+After=local-fs.target
+Before=multi-user.target
+ConditionPathExists=/usr/local/sbin/firstboot-grow-root.sh
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/firstboot-grow-root.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

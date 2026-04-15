@@ -17,6 +17,10 @@ BLOCK_SIZE=512
 PAD_SIZE=$((50 * 1024 * 2 * BLOCK_SIZE))
 BOOT_PAD_SIZE=$((50 * 1024 * 2 * BLOCK_SIZE))
 ROOTFS_PAD_SIZE=$((100 * 1024 * 2 * BLOCK_SIZE))
+BOOT_PARTITION_SIZE=$((256 * 1024 * 1024))
+BOOT_START_SECTOR=32768
+BOOT_END_SECTOR=$((BOOT_START_SECTOR + (BOOT_PARTITION_SIZE / BLOCK_SIZE) - 1))
+ROOTFS_START_SECTOR=$((BOOT_END_SECTOR + 1))
 
 # 删除旧的镜像和挂载点
 sudo umount ${MOUNT_POINT}/_boot || true
@@ -41,11 +45,11 @@ label rockchip-kernel6.1
 EOF
 cat boot_fs/extlinux/extlinux.conf
 # 创建 boot 镜像
-BOOT_IMG_SIZE=$(( $(sudo du -sb boot_fs | cut -f1) + PAD_SIZE))
-# 判断 BOOT_IMG_SIZE 是否小于 100M
-MAX_BOOT_SIZE=$((100 * 1024 * 1024)) # 100M
-if [ "$BOOT_IMG_SIZE" -ge "$MAX_BOOT_SIZE" ]; then
-    echo "Error: BOOT_IMG_SIZE exceeds 100M limit."
+BOOT_IMG_SIZE=$BOOT_PARTITION_SIZE
+# 判断 BOOT_IMG_SIZE 是否小于等于 256M
+MAX_BOOT_SIZE=$BOOT_PARTITION_SIZE
+if [ "$BOOT_IMG_SIZE" -gt "$MAX_BOOT_SIZE" ]; then
+    echo "Error: BOOT_IMG_SIZE exceeds 256M limit."
     exit 1
 fi
 
@@ -57,7 +61,7 @@ sudo umount $MOUNT_POINT/_boot
 
 # 创建并格式化 rootfs 文件系统
 mkdir -p rootfs_fs
-sudo cp -a --no-dereference $TOP_DIR/build/alpine/* rootfs_fs
+sudo cp -a --no-dereference $TOP_DIR/build/${RootFileSystem}/* rootfs_fs
 
 # 创建 rootfs 镜像
 ROOTFS_IMG_SIZE=$(( $(sudo du -sb rootfs_fs | cut -f1) + ROOTFS_PAD_SIZE + PAD_SIZE))
@@ -72,14 +76,14 @@ sudo umount $MOUNT_POINT/_rootfs
 sudo rm -rf ${MOUNT_POINT}
 
 # 创建固件镜像
-FIRMWARE_SIZE=$((262144 * 512 + $ROOTFS_IMG_SIZE + $PAD_SIZE))
+FIRMWARE_SIZE=$((ROOTFS_START_SECTOR * BLOCK_SIZE + $ROOTFS_IMG_SIZE + $PAD_SIZE))
 FIRMWARE_SIZE=$(( ($FIRMWARE_SIZE + 511) / 512 * 512 ))
 fallocate -l $FIRMWARE_SIZE $OUTPUT_IMG
 
 # 创建 GPT 分区表
 sudo parted "$OUTPUT_IMG" mklabel gpt \
-mkpart primary fat32 32768s 262143s \
-mkpart primary ext4 262144s 100%
+mkpart primary fat32 ${BOOT_START_SECTOR}s ${BOOT_END_SECTOR}s \
+mkpart primary ext4 ${ROOTFS_START_SECTOR}s 100%
 
 # 设置环回设备
 LOOP_DEV=$(sudo losetup -f --show "$OUTPUT_IMG")
@@ -103,4 +107,3 @@ ls -lh "$OUTPUT_IMG"
 
 # 清理
 sudo rm -rf boot_fs rootfs_fs
-xz -9 -e -v -k -T 0 $OUTPUT_IMG

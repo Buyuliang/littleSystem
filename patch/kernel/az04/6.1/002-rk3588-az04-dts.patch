@@ -463,7 +463,7 @@ index 000000000..47c7e6484
 +&gpu {
 +	mali-supply = <&vdd_gpu_s0>;
 +	mem-supply = <&vdd_gpu_mem_s0>;
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&i2s0_8ch {
@@ -893,7 +893,7 @@ index 000000000..47c7e6484
 +
 +&pcie30phy {
 +	rockchip,pcie30-phymode = <PHY_MODE_PCIE_AGGREGATION>; /* P1:PCIe3x2  +  P0:PCIe3x2 */
-+	status = "okay";
++	status = "disabled";
 +};
 +
 +&pcie3x4 {
@@ -901,7 +901,7 @@ index 000000000..47c7e6484
 +	pinctrl-names = "default";
 +    reset-gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
 +    vpcie3v3-supply = <&vcc3v3_pcie30>;
-+    status = "okay";
++    status = "disabled";
 +};
 +
 +&pinctrl {

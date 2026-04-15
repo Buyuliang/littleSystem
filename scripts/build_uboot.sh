@@ -36,7 +36,7 @@ time make O=$UBOOT_BUILD_DIR -j$(nproc)
 
 pushd $UBOOT_BUILD_DIR
 # idbloader.img:
-$UBOOT_BUILD_DIR/tools/mkimage -n rk3588 -T rksd -d $RKBIN_DIR/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin:$UBOOT_BUILD_DIR/spl/u-boot-spl.bin $UBOOT_BUILD_DIR/idbloader.img
+$UBOOT_BUILD_DIR/tools/mkimage -n rk3588 -T rksd -d $RKBIN_DIR/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.22.bin:$UBOOT_BUILD_DIR/spl/u-boot-spl.bin $UBOOT_BUILD_DIR/idbloader.img
 
 # u-boot.its:
 cp $RKBIN_DIR/bin/rk35/rk3588_bl31_v1.45.elf $UBOOT_BUILD_DIR/bl31.elf
